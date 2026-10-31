@@ -1,0 +1,46 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>XenonCode for VS Code</title>
+<style>
+  body { font: 16px/1.55 system-ui, sans-serif; max-width: 46rem; margin: 4rem auto; padding: 0 1rem; color: #dbe2ea; background: #10141a; }
+  a { color: #7cc4ff; } code { background: #1a2230; padding: .1em .35em; border-radius: 4px; }
+  h2 { margin-top: 2rem; } li { margin: .3rem 0; }
+</style>
+<h1>XenonCode for VS Code</h1>
+<p>Write <b>XenonCode</b> — the language of <b>Archean</b> craft computers —
+in Visual Studio Code, powered by
+<a href="https://github.com/Joeppie/xenoncore">xenoncore</a>: the same
+analyzer, vocabulary and reference docs the
+<a href="https://joeppie.github.io/archean-blueprint-tools/">Archean blueprint app</a>
+uses.</p>
+<h2>Install</h2>
+<ul>
+  <li>Build the VSIX: <code>git clone … && npm ci && npm run compile && npx @vscode/vsce package</code>,
+    then <em>Install from VSIX</em> in the command palette. Every push also
+    uploads the VSIX as a CI artifact.</li>
+</ul>
+<h2>What you get</h2>
+<ul>
+  <li>Red squiggles while typing: undeclared <code>@functions</code>,
+    unknown calls, missing returns, duplicates — the analyzer that ships
+    ZERO false positives on the shipped game disks.</li>
+  <li>Completion over the device vocabulary (<code>input_number</code>,
+    <code>output_text</code>, screens, beacons…), project functions,
+    <code>$variables</code>; hover with signature + description + origin;
+    go-to-definition; document symbols.</li>
+  <li>The <b>COMPILE function</b>: <em>XenonCode: Decompose Craft</em>
+    turns a craft <code>blueprint.json</code> (an in-game save) into
+    <code>craft.json</code> + <code>src/&lt;disk&gt;/*.xc</code> real
+    files; <em>XenonCode: Pack Craft</em> writes them back with byte
+    surgery — every byte outside the edited program texts rides
+    unchanged. Load the packed craft in-game; the computer reboots on
+    it.</li>
+</ul>
+<h2>Coming next</h2>
+<p>Debug adapter (breakpoints, stepping, live variables on the real wasm
+VM), the simulation panel (screens, io, pilot inputs), marketplace
+publishing. Plan:
+<a href="https://github.com/Joeppie/archean-blueprint-tools/blob/main/REWRITE.md">REWRITE § P10</a>.</p>
+<p><a href="https://github.com/Joeppie/xenoncode-vscode">Source (GPL-3.0)</a>
+· <a href="https://github.com/Joeppie/xenoncore">xenoncore</a>
+· <a href="https://joeppie.github.io/xenoncore/playground/index.html">browser playground</a></p>
