@@ -39,7 +39,15 @@ commands turn a craft into a folder of real files and back:
 The same loop exists headless: `npx xenon decompose/pack/programs/diagnose`
 and an MCP server (`xenon-mcp`) for AI-assisted program design.
 
-## Status / limits (v0.1.0)
+## Parity & testing
+
+[PARITY.md](PARITY.md) audits us against the game developer's own `xenoncode`
+extension (v0.0.9 — grammar + tabs + a per-line native-linter spawn): basics
+met (their grammar is our seed), exceeded on diagnostics, the full IDE
+surface and the COMPILE function. [TESTING.md](TESTING.md) is the living
+test/dev inventory (T0 landed → T6).
+
+## Status / limits (v0.2.0)
 
 - The debugger (XENON-DEBUG ⇄ DAP: breakpoints, stepping, live vars) and
   the simulation webview (screens, io, pilot inputs) are the next slices.

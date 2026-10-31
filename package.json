@@ -2,7 +2,7 @@
   "name": "xenoncode-vscode",
   "displayName": "XenonCode (Archean)",
   "description": "XenonCode language support for Archean craft workspaces: analyzer diagnostics, completion, hover, go-to-definition, symbols — and the decompose/pack COMPILE function, all on the xenoncore package.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "joeppie",
   "license": "GPL-3.0-only",
   "repository": {
@@ -64,6 +64,13 @@
           "default": true,
           "description": "Publish xenoncore analyzer diagnostics (the same analyzer the Archean blueprint app's IDE uses)."
         }
+      }
+    },
+    "configurationDefaults": {
+      "[xenoncode]": {
+        "editor.insertSpaces": false,
+        "editor.detectIndentation": false,
+        "editor.tabSize": 4
       }
     }
   },

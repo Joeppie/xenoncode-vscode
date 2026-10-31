@@ -105,3 +105,25 @@ export function definition(files: XCFile[], line: string, col: number) {
   const fn = definitionOf(projectFunctions(files), word.slice(1));
   return fn ? { file: fn.file, line: fn.line, display: fn.display } : null;
 }
+
+/**
+ * THE TAB LAW (the dev's rule, ported from their extension's aggressive
+ * auto-convert): the game's parser scopes block bodies by TABS — four
+ * leading spaces (then two) collapse to one tab, recursively, only in the
+ * leading whitespace. Text bodies ride untouched. (The dev's extension
+ * rewrites the editor on every keystroke; here it is a FORMAT command —
+ * same law, no surprises.)
+ */
+export function leadingSpacesToTabs(text: string): string {
+  return text
+    .split('\n')
+    .map(line => {
+      const m = /^([ \t]+)(.*)$/.exec(line);
+      if (!m) return line;
+      const lead = m[1]!
+        .replace(/    /g, '\t')      // four spaces first (the dev's order)
+        .replace(/  /g, '\t');
+      return lead + m[2];
+    })
+    .join('\n');
+}

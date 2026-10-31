@@ -14,7 +14,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { XCFile } from 'xenoncore';
-import { analyze, completions, definition, hover, symbols, toDiagnostics } from './lib';
+import { analyze, completions, definition, hover, leadingSpacesToTabs, symbols, toDiagnostics } from './lib';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -60,6 +60,7 @@ connection.onInitialize((): InitializeResult => ({
     hoverProvider: true,
     definitionProvider: true,
     documentSymbolProvider: true,
+    documentFormattingProvider: true,
   },
 }));
 
@@ -100,6 +101,21 @@ connection.onDefinition((p) => {
     uri: base + hit.file,
     range: { start: { line: hit.line - 1, character: 0 }, end: { line: hit.line - 1, character: 0 } },
   };
+});
+
+connection.onDocumentFormatting((p) => {
+  const doc = documents.get(p.textDocument.uri);
+  if (!doc) return [];
+  const text = doc.getText();
+  const fixed = leadingSpacesToTabs(text);
+  if (fixed === text) return [];
+  return [{
+    range: {
+      start: { line: 0, character: 0 },
+      end: { line: doc.lineCount, character: 0 },
+    },
+    newText: fixed,
+  }];
 });
 
 connection.onDocumentSymbol((p) => {

@@ -2,7 +2,7 @@
 // no connection — file lists in, protocol objects out.
 import { describe, expect, it } from 'vitest';
 import { DiagnosticSeverity, CompletionItemKind, SymbolKind } from 'vscode-languageserver-protocol';
-import { analyze, completions, definition, hover, symbols, toDiagnostics, wordAt } from '../server/lib';
+import { analyze, completions, definition, hover, leadingSpacesToTabs, symbols, toDiagnostics, wordAt } from '../server/lib';
 
 const f = (name: string, code: string) => ({ name, code });
 
@@ -69,5 +69,23 @@ describe('symbols + definition', () => {
     expect(d).not.toBeNull();
     expect(d!.file).toBe('main.xc');
     expect(d!.line).toBe(1);
+  });
+});
+
+describe('THE TAB LAW (the dev rule, on demand)', () => {
+  it('leading 4-space runs (then 2) collapse to tabs; bodies ride', () => {
+    const src = 'init\n    print(1)\n        print(2)\n  print(3)\nvar $s = "    not leading"\n';
+    expect(leadingSpacesToTabs(src))
+      .toBe('init\n\tprint(1)\n\t\tprint(2)\n\tprint(3)\nvar $s = "    not leading"\n');
+  });
+  it('tab-indented code is untouched (idempotent)', () => {
+    const src = 'init\n\tprint(1)\n\t\tprint(2)\n';
+    expect(leadingSpacesToTabs(src)).toBe(src);
+  });
+});
+
+describe('THE TAB LAW — deep indent', () => {
+  it('16 leading spaces become FOUR tabs (no tab-run collapsing)', () => {
+    expect(leadingSpacesToTabs('                print(1)\n')).toBe('\t\t\t\tprint(1)\n');
   });
 });
