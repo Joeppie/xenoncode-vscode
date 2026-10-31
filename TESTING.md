@@ -80,14 +80,24 @@ Two paths to parity-plus:
       spawn cost is the flaw we must not copy)
 - [ ] TRUE-NEGATIVE law: the bench disks compile clean (pin)
 
-## T5 — debugger (DAP) — 🔜 after S2 lands the farm in the package
-The stepping core already exists pinned: `xenoncore` `stepper.ts`
-(S2a). Inventory: DAP server (`@vscode/debugadapter`): launch config
-(`craft.json` + program), setBreakPoints → the breaks map, next/stepIn
-→ stepMode over/into, stackTrace/variables from the pump snapshots,
-the WRITEBACK LAW on setVariable; UI: breakpoints in `.xc`, F5/F10/F11
-on a decomposed workspace. Game-truth: the app's in-browser debugger
-is the reference implementation.
+## T5 — debugger (DAP) — ✅ LANDED v0.3.0 (2026-11-01)
+`server/dap.ts` (adapter, debug type `xenoncode`) + `server/xcrun.ts`
+(node VM runner: the glue+wasm SHIPPED IN xenoncore, the vmharness
+fetch-shim boot law, 25 Hz cadence, the tracking gate). Stepping = the
+pinned `xenoncore/stepper.ts` law; pause = THE PARK LAW (`requestPause`
+→ rc=2 exact-line); globals + locals scopes; THE WRITEBACK LAW on
+setVariable (globals; locals read-only in v1); STEPPING OFF A BREAKPOINT
+suppresses the current line's break until you leave it. The smoke
+(`test/dap.test.ts`) spawns the BUILT adapter and speaks real DAP on
+real wasm: initialize→launch→setBreakpoints→configurationDone→
+Stopped(breakpoint)→next→Stopped(step)→stackTrace→variables($t)→
+disconnect. LESSONS: npm git-deps get LFS POINTERS (xenoncore v0.3.2
+un-LFS'd the shipped wasm); clients must send `pathFormat:'path'`;
+the VM's vars ride BARE names — the sigil is display.
+v1 boundary: no devices (io reads 0), single frame (stepOut = F10),
+no conditional breakpoints, no screens pane (webview = T6).
+Tightenings: stepOut via the depth stream; io device stubs from
+craft.json; screens rendered from the shim's RAM buffers.
 
 ## T6 — simulation panel (webview) — 🔜 after S3 (CraftSpec)
 Screens canvas (real wasm via the webview), io pin view, pilot pads;

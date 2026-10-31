@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import * as path from 'node:path';
 import {
   LanguageClient, LanguageClientOptions, ServerOptions, TransportKind,
 } from 'vscode-languageclient/node';
@@ -35,6 +36,20 @@ export function activate(context: vscode.ExtensionContext) {
   client.start().catch(() => { /* the server is optional: the commands work without it */ });
 
   context.subscriptions.push(
+    // F5 on an open .xc with no launch.json: point the debugger AT the
+    // program folder the file lives in (a decomposed src/<disk> dir).
+    vscode.debug.registerDebugConfigurationProvider('xenoncode', {
+      resolveDebugConfiguration(_folder, config) {
+        if (!config.program) {
+          const ed = vscode.window.activeTextEditor;
+          if (ed && ed.document.fileName.endsWith('.xc'))
+            config.program = path.dirname(ed.document.fileName);
+          else if (vscode.workspace.workspaceFolders?.[0])
+            config.program = vscode.workspace.workspaceFolders[0].uri.fsPath;
+        }
+        return config;
+      },
+    }),
     vscode.commands.registerCommand('xenon.decompose', async () => {
       const bp = await vscode.window.showOpenDialog({
         canSelectFiles: true, canSelectFolders: false, openLabel: 'blueprint.json',

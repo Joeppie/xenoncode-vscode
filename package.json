@@ -2,7 +2,7 @@
   "name": "xenoncode-vscode",
   "displayName": "XenonCode (Archean)",
   "description": "XenonCode language support for Archean craft workspaces: analyzer diagnostics, completion, hover, go-to-definition, symbols — and the decompose/pack COMPILE function, all on the xenoncore package.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "joeppie",
   "license": "GPL-3.0-only",
   "repository": {
@@ -19,7 +19,8 @@
   "main": "./dist/client.js",
   "activationEvents": [
     "onLanguage:xenoncode",
-    "workspaceContains:**/craft.json"
+    "workspaceContains:**/craft.json",
+    "onDebug"
   ],
   "contributes": {
     "languages": [
@@ -72,20 +73,72 @@
         "editor.detectIndentation": false,
         "editor.tabSize": 4
       }
-    }
+    },
+    "debuggers": [
+      {
+        "type": "xenoncode",
+        "label": "XenonCode (xenoncore VM)",
+        "languages": [
+          "xenoncode"
+        ],
+        "program": "./dist/debugAdapter.js",
+        "runtime": "node",
+        "initialConfigurations": [
+          {
+            "version": "0.2.0",
+            "name": "Debug XenonCode program (this folder)",
+            "type": "xenoncode",
+            "request": "launch",
+            "program": "${fileDirname}"
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "XenonCode: debug program",
+            "description": "Debug a decomposed craft's program folder",
+            "body": {
+              "type": "xenoncode",
+              "request": "launch",
+              "name": "Debug XenonCode program",
+              "program": "^\"\\${workspaceFolder}/src/\""
+            }
+          }
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Folder containing the program's .xc files (a decomposed craft's src/<disk> dir)"
+              },
+              "entry": {
+                "type": "string",
+                "description": "Entry file (default: the disk's entry law)"
+              }
+            }
+          }
+        }
+      }
+    ]
   },
   "scripts": {
-    "compile": "esbuild client/extension.ts --bundle --platform=node --format=cjs --outfile=dist/client.js --external:vscode --sourcemap && esbuild server/server.ts --bundle --platform=node --format=cjs --outfile=dist/server.js --external:vscode --sourcemap",
+    "compile": "esbuild client/extension.ts --bundle --platform=node --format=cjs --outfile=dist/client.js --external:vscode --sourcemap && esbuild server/server.ts --bundle --platform=node --format=cjs --outfile=dist/server.js --external:vscode --sourcemap && esbuild server/dap.ts --bundle --platform=node --format=cjs --outfile=dist/debugAdapter.js --external:vscode --sourcemap",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "package": "vsce package"
+    "package": "vsce package",
+    "pretest": "npm run compile"
   },
   "dependencies": {
+    "@vscode/debugadapter": "^1.66.0",
+    "@vscode/debugprotocol": "^1.66.0",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5",
     "vscode-languageserver-textdocument": "^1.0.12",
-    "xenoncore": "github:Joeppie/xenoncore#v0.2.1",
-    "vscode-languageserver-protocol": "^3.17.5"
+    "xenoncore": "github:Joeppie/xenoncore#v0.3.2"
   },
   "devDependencies": {
     "@types/node": "^24",

@@ -47,10 +47,11 @@ met (their grammar is our seed), exceeded on diagnostics, the full IDE
 surface and the COMPILE function. [TESTING.md](TESTING.md) is the living
 test/dev inventory (T0 landed → T6).
 
-## Status / limits (v0.2.0)
+## Status / limits (v0.3.0)
 
-- The debugger (XENON-DEBUG ⇄ DAP: breakpoints, stepping, live vars) and
-  the simulation webview (screens, io, pilot inputs) are the next slices.
+- The debugger v1 runs a program against an EMPTY craft: `input_number`
+  reads 0, outputs print to the debug console. The simulation webview
+  (screens, io, pilot inputs) is the next slice (T6).
 - The alias census (CraftSpec) is not wired into the analyzer yet, so
   `input_number("alias",…)` alias checks stay off in the extension.
 - Game files: point Decompose at your `client/blueprints/<id>/blueprint.json`
