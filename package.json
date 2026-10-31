@@ -1,0 +1,90 @@
+{
+  "name": "xenoncode-vscode",
+  "displayName": "XenonCode (Archean)",
+  "description": "XenonCode language support for Archean craft workspaces: analyzer diagnostics, completion, hover, go-to-definition, symbols — and the decompose/pack COMPILE function, all on the xenoncore package.",
+  "version": "0.1.0",
+  "publisher": "joeppie",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joeppie/xenoncode-vscode.git"
+  },
+  "type": "commonjs",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./dist/client.js",
+  "activationEvents": [
+    "onLanguage:xenoncode",
+    "workspaceContains:**/craft.json"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "xenoncode",
+        "aliases": [
+          "XenonCode",
+          "xenoncode"
+        ],
+        "extensions": [
+          ".xc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "xenoncode",
+        "scopeName": "source.xenoncode",
+        "path": "./syntaxes/xenoncode.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "xenon.decompose",
+        "title": "XenonCode: Decompose Craft (blueprint.json → workspace folder)"
+      },
+      {
+        "command": "xenon.pack",
+        "title": "XenonCode: Pack Craft (workspace folder → blueprint.json)"
+      },
+      {
+        "command": "xenon.programs",
+        "title": "XenonCode: List Craft Programs (from a blueprint.json)"
+      }
+    ],
+    "configuration": {
+      "title": "XenonCode",
+      "properties": {
+        "xenoncore.diagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Publish xenoncore analyzer diagnostics (the same analyzer the Archean blueprint app's IDE uses)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "esbuild client/extension.ts server/server.ts --bundle --platform=node --format=cjs --outdir=dist --external:vscode --sourcemap",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "xenoncore": "github:Joeppie/xenoncore#v0.2.1",
+    "vscode-languageserver-protocol": "^3.17.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.28.0",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
