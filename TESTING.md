@@ -55,9 +55,22 @@ The loop the whole feature exists for:
 
 ## T4 — the dev-extension parity leg: REAL-parser syntax checks — 🔜
 The ONE thing the dev extension has that we lack: parse errors from the
-interpreter's own parser (they spawn `xenoncode -parse-line-generic`
-per line). The exceed path: run the REAL XenonCode wasm (it ships in
-xenoncore) as a COMPILE CHECKER in the extension host:
+interpreter's own parser. HOW they get it (main.cpp, verified
+2026-11-01): their repo ships a native CLI (`xenoncode`) around the C++
+interpreter — `-parse-line[-generic]`, `-parse-file`, `-compile <dir>`
+(parse+compile a program dir with a main.xc → writes the
+`XC_PROGRAM_EXECUTABLE` = the `xc_program.bin` format found in the
+game's HUD dirs!), `-run <dir> -hz <n>` (a bare desktop simulator).
+The extension is a remote control for a binary the USER builds.
+Two paths to parity-plus:
+- [ ] **T4-A (day parity):** settings `xenoncode.cliPath`; ONE
+      `xenoncode -compile <srcDir>` call per project on save/decompose —
+      the decomposed workspace IS their program-dir shape (main.xc
+      entry!), so this is project-wide real-parser diagnostics —
+      strictly better than their per-line spawns. Optional: `-run` in a
+      terminal = quick program smoke.
+- [ ] **T4-B (the exceed):** run the REAL XenonCode wasm (it ships in
+      xenoncore) as a COMPILE CHECKER in the extension host:
 - [ ] rebuild the wasm with `-sENVIRONMENT=web,worker,node` (REWRITE
       § P10 S0 item; xenoncore build.sh) → node-loadable glue
 - [ ] a compile-only entry (the shim's compile path, no cycles): file
