@@ -5,7 +5,7 @@
 // are all the shipped artifacts — this is the feature, not a mock.
 import { describe, expect, it } from 'vitest';
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,7 +32,7 @@ class DapClient {
   private buf = Buffer.alloc(0);
   private seq = 0;
   readonly events: DapMsg[] = [];
-  private waiters: ((e: DapMsg) => void)[] = [];
+  private waiters: ((e: DapMsg) => boolean)[] = [];
   private pending = new Map<number, (m: DapMsg) => void>();
   constructor(private p: ChildProcessWithoutNullStreams) {
     p.stdout.on('data', (c: Buffer) => {                        // ONE consumer
