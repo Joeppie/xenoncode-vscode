@@ -2,7 +2,7 @@
   "name": "xenoncode-vscode",
   "displayName": "XenonCode (Archean)",
   "description": "XenonCode language support for Archean craft workspaces: analyzer diagnostics, completion, hover, go-to-definition, symbols — and the decompose/pack COMPILE function, all on the xenoncore package.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "publisher": "joeppie",
   "license": "GPL-3.0-only",
   "repository": {
@@ -123,11 +123,12 @@
     ]
   },
   "scripts": {
-    "compile": "esbuild client/extension.ts --bundle --platform=node --format=cjs --outfile=dist/client.js --external:vscode --sourcemap && esbuild server/server.ts --bundle --platform=node --format=cjs --outfile=dist/server.js --external:vscode --sourcemap && esbuild server/dap.ts --bundle --platform=node --format=cjs --outfile=dist/debugAdapter.js --external:vscode --sourcemap",
+    "compile": "npm run prepassets && esbuild client/extension.ts --bundle --platform=node --format=cjs --outfile=dist/client.js --external:vscode --sourcemap && esbuild server/server.ts --bundle --platform=node --format=cjs --outfile=dist/server.js --external:vscode --sourcemap && esbuild server/dap.ts --bundle --platform=node --format=cjs --outfile=dist/debugAdapter.js --external:vscode --sourcemap",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "package": "vsce package",
-    "pretest": "npm run compile"
+    "pretest": "npm run compile",
+    "prepassets": "node -e \"const fs=require('fs');fs.mkdirSync('assets',{recursive:true});const p=require.resolve('xenoncore/package.json');const d=require('path').join(require('path').dirname(p),'tools','xenoncode');fs.copyFileSync(d+'/xenoncode.js','assets/xenoncode.mjs');fs.copyFileSync(d+'/xenoncode.wasm','assets/xenoncode.wasm');\""
   },
   "dependencies": {
     "@vscode/debugadapter": "^1.66.0",

@@ -9,12 +9,13 @@
 // devices (io reads 0, writes log), no beacons, no audio — a program
 // debugged in VS Code runs against an empty craft. THE STEPPER LAW comes
 // from xenoncore/stepper.ts — the SAME pinned law the app pump walks.
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const require_ = createRequire(__filename);
+import * as path from 'node:path';
 
 export interface RunnerScreen { alias: string; channel: number; w: number; h: number }
 export interface RunnerFile { name: string; code: string }
@@ -24,8 +25,16 @@ export interface RunnerLocal extends RunnerVar { s: number }
 
 let wasmBytes: Buffer | null = null;
 let assetDir = '';
+/**
+ * ASSET RESOLUTION: a VSIX ships NO node_modules — the installed adapter
+ * must find the glue+wasm in its OWN package (the `assets/` dir, copied
+ * from the xenoncore dependency at build time by npm run prepassets).
+ * Dev checkouts keep the node_modules fallback.
+ */
 function assets(): string {
   if (assetDir) return assetDir;
+  const bundled = path.join(__dirname, '..', 'assets');
+  if (existsSync(path.join(bundled, 'xenoncode.wasm'))) return bundled;
   const pkg = require_.resolve('xenoncore/package.json');
   assetDir = join(dirname(pkg), 'tools', 'xenoncode');
   return assetDir;
@@ -52,7 +61,12 @@ export class XcRunner {
 
   static async open(files: RunnerFile[], screens: RunnerScreen[]): Promise<XcRunner> {
     serveWasm();
-    const glue = await import(pathToFileURL(join(assets(), 'xenoncode.js')).href);
+    // the VSIX-bundled glue rides as .mjs (the extension package is CJS;
+    // ESM-under-commonjs dies on import.meta) — dev checkouts keep the
+    // dependency's .js under its own type:module package
+    const dir = assets();
+    const glueFile = existsSync(join(dir, 'xenoncode.mjs')) ? 'xenoncode.mjs' : 'xenoncode.js';
+    const glue = await import(pathToFileURL(join(dir, glueFile)).href);
     const mod = await glue.default({ locateFile: () => 'xenoncode.wasm' });
     const run = new XcRunner(mod);
     const put = (name: string, code: string) => {
