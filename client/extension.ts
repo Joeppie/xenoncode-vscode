@@ -36,6 +36,18 @@ export function activate(context: vscode.ExtensionContext) {
   client.start().catch(() => { /* the server is optional: the commands work without it */ });
 
   context.subscriptions.push(
+    // THE MODERN ADAPTER REGISTRATION (v0.3.1): manifest runtime/program
+    // launches are retired by 2026 contribution validation — a debugger
+    // contribution carrying them is DROPPED silently (no gutter, no F9,
+    // inert F5 — the exact field-missing symptom we shipped into). The
+    // descriptor factory is the supported path.
+    vscode.debug.registerDebugAdapterDescriptorFactory('xenoncode', {
+      createDebugAdapterDescriptor() {
+        return new vscode.DebugAdapterExecutable(process.execPath, [
+          context.asAbsolutePath('dist/debugAdapter.js'),
+        ]);
+      },
+    }),
     // F5 on an open .xc with no launch.json: point the debugger AT the
     // program folder the file lives in (a decomposed src/<disk> dir).
     vscode.debug.registerDebugConfigurationProvider('xenoncode', {
